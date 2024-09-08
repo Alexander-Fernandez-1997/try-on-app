@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
-import fetchImage from "@/lib/fetchImage";
+import { handleSubmit as serverAction } from "@/lib/fetchImage";
 
 export default function TryOnButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,6 @@ export default function TryOnButton() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
-      // Reset result image when a new file is dropped
       setResultImage(null);
     }
   }, []);
@@ -44,7 +43,6 @@ export default function TryOnButton() {
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      // Reset result image when a new file is selected
       setResultImage(null);
     }
   };
@@ -52,22 +50,15 @@ export default function TryOnButton() {
   const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = async (
     event
   ) => {
-    console.log("handleSubmit");
     event.preventDefault();
-    // let newfile =
-    // "https://assets.weforum.org/sf_account/image/79VahTYKJ3wz-OlZIDHInTN-HuxMTL2awujG0fOsDnk.jpg";
-    // file to string so i can pass it to fetchImage
-    const reader = new FileReader();
-    reader.readAsDataURL(file as Blob);
-    let file64 = "";
-    reader.onloadend = function () {
-      file64 = reader.result as string;
-    };
 
     if (file) {
-      const response = await fetchImage(file64);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await serverAction(formData);
       if (response.success) {
-        setResultImage(response.data);
+        setResultImage(response.resultImage);
       } else {
         setResultImage("/no-result.avif");
       }
@@ -75,10 +66,6 @@ export default function TryOnButton() {
   };
 
   return (
-    // <form
-    //   // action={handleSubmit}
-    //   onSubmit={handleSubmit}
-    // >
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="outline" size="lg">
@@ -162,6 +149,5 @@ export default function TryOnButton() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    // </form>
   );
 }

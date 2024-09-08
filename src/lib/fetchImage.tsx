@@ -1,12 +1,15 @@
+// /src/lib/actions.ts
 "use server";
+
 import { Client, handle_file } from "@gradio/client";
 
-async function fetchImage(file: any) {
+export async function handleSubmit(formData: FormData) {
   try {
-    // Create a file from the blob and pass it to handle_file
-    const person = handle_file(file);
-    console.log("person", person);
+    const file = formData.get("image") as File;
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
+    const person = handle_file(buffer); // Pass buffer to Gradio
     const cloth = handle_file(
       "https://jallenjia-change-clothes-ai.hf.space/file=/tmp/gradio/2576ee3b4c17e7576be382c80ef276a52376bc5c/bocaa.jpg"
     );
@@ -30,35 +33,15 @@ async function fetchImage(file: any) {
       category: "upper_body",
     });
 
-    console.log("API Response:", result.data);
-    const answer = {
+    return {
       success: true,
-      data: (result.data as any)[0]["url"],
+      resultImage: (result.data as any)[0]["url"],
     };
-    return answer;
   } catch (error: any) {
-    console.error("Error details:", JSON.stringify(error, null, 2));
+    console.error("Error details:", error);
     return {
       success: false,
-      data: error.message,
+      resultImage: "/no-result.avif",
     };
   }
 }
-
-export async function handleSubmit(formData: FormData) {
-  console.log("formData", formData);
-  const file = formData.get("image") as File;
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  console.log("buffer", buffer);
-
-  const response = await fetchImage(buffer);
-  console.log("response", response);
-  if (response.success) {
-    return { success: true, resultImage: response.data };
-  } else {
-    return { success: false, resultImage: "/no-result.avif" };
-  }
-}
-
-export default fetchImage;
