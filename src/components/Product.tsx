@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import TryOnButton from "./TryOnButton";
+import Image from "next/image";
 
 export function Product() {
   return (
@@ -40,8 +41,7 @@ export function Product() {
       </header>
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 p-4 md:p-6">
         <div>
-          <img
-            // src="/placeholder.svg"
+          <Image
             src="/bocaa.jpg"
             alt="Product Image"
             width={600}
@@ -54,13 +54,12 @@ export function Product() {
           <h1 className="text-3xl font-bold">Boca 2006</h1>
           <p className="text-muted-foreground">
             Celebrate the iconic Argentine football club, Boca Juniors, with
-            this classic 2006 T-shirt. Featuring the club's vibrant blue and
-            gold colors, this shirt captures the spirit of one of the most
-            successful teams in South American football. Perfect for Boca
-            Juniors fans, it commemorates a year of intense competition and
-            passion. Whether you're wearing it to a match or as casual
-            streetwear, this T-shirt is a must-have for showing your pride and
-            loyalty to Boca Juniors.
+            this classic 2006 T-shirt. Featuring the clubs vibrant blue and gold
+            colors, this shirt captures the spirit of one of the most successful
+            teams in South American football. Perfect for Boca Juniors fans, it
+            commemorates a year of intense competition and passion. Whether
+            youre wearing it to a match or as casual streetwear, this T-shirt is
+            a must-have for showing your pride and loyalty to Boca Juniors.
           </p>
           <div className="flex gap-2">
             <TryOnButton />
@@ -148,7 +147,11 @@ export function Product() {
   );
 }
 
-function MountainIcon(props: any) {
+interface MountainIconProps {
+  className?: string;
+}
+
+function MountainIcon(props: MountainIconProps) {
   return (
     <svg
       {...props}
