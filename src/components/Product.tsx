@@ -166,5 +166,3 @@ function MountainIcon(props: any) {
     </svg>
   );
 }
-// bg-primary text-primary-foreground
-// variant="outline" size="lg"

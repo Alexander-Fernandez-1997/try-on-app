@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
+import fetchImage from "@/lib/fetchImage";
 
 export default function TryOnButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,18 +49,36 @@ export default function TryOnButton() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = async (
+    event
+  ) => {
+    console.log("handleSubmit");
+    event.preventDefault();
+    // let newfile =
+    // "https://assets.weforum.org/sf_account/image/79VahTYKJ3wz-OlZIDHInTN-HuxMTL2awujG0fOsDnk.jpg";
+    // file to string so i can pass it to fetchImage
+    const reader = new FileReader();
+    reader.readAsDataURL(file as Blob);
+    let file64 = "";
+    reader.onloadend = function () {
+      file64 = reader.result as string;
+    };
+
     if (file) {
-      console.log("Submitting file:", file.name);
-      // Here you would typically upload the file and process it
-      // For now, we'll just simulate an API response with a placeholder
-      setResultImage("/placeholder.svg?height=300&width=300");
-      // In a real scenario, you'd update setResultImage with the API response
-      // setResultImage(apiResponseImageUrl)
+      const response = await fetchImage(file64);
+      if (response.success) {
+        setResultImage(response.data);
+      } else {
+        setResultImage("/no-result.avif");
+      }
     }
   };
 
   return (
+    // <form
+    //   // action={handleSubmit}
+    //   onSubmit={handleSubmit}
+    // >
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="outline" size="lg">
@@ -111,6 +130,7 @@ export default function TryOnButton() {
               accept="image/*"
               onChange={handleFileInput}
               aria-label="File input"
+              name="image"
             />
           </div>
           <div className="flex justify-center">
@@ -132,15 +152,16 @@ export default function TryOnButton() {
         <AlertDialogFooter className="sm:justify-between">
           <AlertDialogCancel>Close</AlertDialogCancel>
           <Button
-            onClick={handleSubmit}
             disabled={!file}
             variant="outline"
             size="lg"
+            onClick={handleSubmit}
           >
             Submit
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+    // </form>
   );
 }
